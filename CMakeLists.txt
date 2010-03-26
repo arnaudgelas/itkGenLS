@@ -10,9 +10,9 @@ ENDIF( ITK_FOUND )
 
 INCLUDE_DIRECTORIES( BEFORE 
   ${itkGenLS_SOURCE_DIR}/src/
-  ${itkGenLS_SOURCE_DIR}/utilities/
+#  ${itkGenLS_SOURCE_DIR}/utilities/
   ${itkGenLS_BINARY_DIR}/src/
-  ${itkGenLS_BINARY_DIR}/utilities/
+#  ${itkGenLS_BINARY_DIR}/utilities/
 )
 
 INCLUDE( CTest )
@@ -28,7 +28,7 @@ SET( LIBRARY_OUTPUT_PATH
 )
 
 
-ADD_SUBDIRECTORY( src )
+#ADD_SUBDIRECTORY( src )
 ADD_SUBDIRECTORY( test )
 
 

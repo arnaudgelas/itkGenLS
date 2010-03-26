@@ -3,19 +3,20 @@
 
 namespace itk
 {
-template< >
-ImplicitFunctionBase<>::
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
 ImplicitFunctionBase() : Superclass()
 {}
 
-template< >
-ImplicitFunctionBase<>::
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
 ~ImplicitFunctionBase()
 {}
 
-template<>
-ImplicitFunctionBase<>::GradienType
-ImplicitFunctionBase<>::Normal( const InputType& iPt ) 
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+typename ImplicitFunctionBase< TOutput, VPointDimension, TInput >::GradientType
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
+Normal( const InputType& iPt )
 {
   GradientType grad = Gradient( iPt );
   OutputType sq_norm = grad.GetSquaredNorm();
@@ -30,9 +31,9 @@ ImplicitFunctionBase<>::Normal( const InputType& iPt )
     }
 }
 
-template<>
-ImplicitFunctionBase<>::OutputType
-ImplicitFunctionBase<>::Laplacian( const InputType& iPt )
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+typename ImplicitFunctionBase< TOutput, VPointDimension, TInput >::OutputType
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::Laplacian( const InputType& iPt )
 {
   HessianType hess = Hessian( iPt );
 
@@ -45,9 +46,9 @@ ImplicitFunctionBase<>::Laplacian( const InputType& iPt )
   return oValue;
 }
 
-template<>
+template< typename TOutput, unsigned int VPointDimension, class TInput >
 void
-ImplicitFunctionBase<>::
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
 ValueAndGradient( const InputType& iPt,
   OutputType& oValue, GradientType& oGrad )
 {
@@ -55,9 +56,9 @@ ValueAndGradient( const InputType& iPt,
   oGrad = Gradient( iPt );
 }
 
-template<>
+template< typename TOutput, unsigned int VPointDimension, class TInput >
 void
-ImplicitFunctionBase<>::
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
 ValueGradientAndHessian( const InputType& iPt,
   OutputType& oValue, GradientType& oGrad, HessianType& oHess ) 
 {
@@ -65,10 +66,10 @@ ValueGradientAndHessian( const InputType& iPt,
   oHess = Hessian( iPt );
 }
 
-template<>
-ImplicitFunctionBase<>::OutputType
-ImplicitFunctionBaseTaubinErrorValue( const InputType& iPt,
-  const OutputType& iThreshold = vnl_math::eps )
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+typename ImplicitFunctionBase< TOutput, VPointDimension, TInput >::OutputType
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
+TaubinErrorValue( const InputType& iPt, const OutputType& iThreshold )
 {
   OutputType oValue = Evaluate( iPt );
 
@@ -96,42 +97,42 @@ ImplicitFunctionBaseTaubinErrorValue( const InputType& iPt,
   return oValue;
 }
 
-template<>
+template< typename TOutput, unsigned int VPointDimension, class TInput >
 bool 
-ImplicitFunctionBase<>::
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
 IsInside( const InputType& iPt )
 {
   OutputType value = Evaluate( iPt );
   return ( value < 0. );
 }
 
-template<>
+template< typename TOutput, unsigned int VPointDimension, class TInput >
 bool
-ImplicitFunctionBase<>::
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
 IsOutside( const InputType& iPt )
 {
   return !this->IsInside( iPt );
 }
 
-template<>
-ImplicitFunctionBase<>::OutputType
-ImplicitFunctionBase<>::
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+typename ImplicitFunctionBase< TOutput, VPointDimension, TInput >::OutputType
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
 MeanCurvature( const InputType& iPt )
 {
   return MeanCurvature( Dispatch< PointDimension >(), iPt );
 }
 
-template<>
-ImplicitFunctionBase<>::OutputType
-ImplicitFunctionBase<>::
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+typename ImplicitFunctionBase< TOutput, VPointDimension, TInput >::OutputType
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
 GaussKroneckerCurvature( const InputType& iPt )
 {
   return GaussKroneckerCurvature( Dispatch< PointDimension >(), iPt );
 }
 
-template<>
-ImplicitFunctionBase<>::OutputType
-ImplicitFunctionBase<>::
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+typename ImplicitFunctionBase< TOutput, VPointDimension, TInput >::OutputType
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
 MeanCurvature( const Dispatch< 3 >&,
   const InputType& iPt )
 {
@@ -156,9 +157,9 @@ MeanCurvature( const Dispatch< 3 >&,
     }
 }
 
-template<>
-ImplicitFunctionBase<>::OutputType
-ImplicitFunctionBase<>::
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+typename ImplicitFunctionBase< TOutput, VPointDimension, TInput >::OutputType
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
 MeanCurvature( const DispatchBase&,
   const InputType& iPt )
 {
@@ -179,18 +180,18 @@ MeanCurvature( const DispatchBase&,
     (gHgt - sq_norm_g * trace_H) );
 }
 
-template<>
-ImplicitFunctionBase<>::OutputType
-ImplicitFunctionBase<>::
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+typename ImplicitFunctionBase< TOutput, VPointDimension, TInput >::OutputType
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
 GaussKroneckerCurvature( const Dispatch< 2 >&,
   const InputType& iPt )
 {
   return 0.;
 }
 
-template<>
-ImplicitFunctionBase<>::OutputType
-ImplicitFunctionBase<>::
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+typename ImplicitFunctionBase< TOutput, VPointDimension, TInput >::OutputType
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
 GaussKroneckerCurvature( const DispatchBase&,
   const InputType& iPt )
 {
@@ -217,8 +218,10 @@ GaussKroneckerCurvature( const DispatchBase&,
   }
 }
 
-HessianType CurvatureTensor( const Dispatch<3>&,
-  const InputType& iPt )
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+typename ImplicitFunctionBase< TOutput, VPointDimension, TInput >::HessianType
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
+CurvatureTensor( const Dispatch<3>&, const InputType& iPt )
 {
   GradientType g = Gradient( iPt );
   HessianType H = Hessian( iPt );
@@ -241,15 +244,20 @@ HessianType CurvatureTensor( const Dispatch<3>&,
   return oTensor;
 }
 
-HessianType CurvatureTensor( const DispatchBase&,
-  const InputType& iPt )
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+typename ImplicitFunctionBase< TOutput, VPointDimension, TInput >::HessianType
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
+CurvatureTensor( const DispatchBase&, const InputType& iPt )
 {
   HessianType oTensor;
   oTensor.Fill( 0. );
   return oTensor;
 }
 
-void PrincipalCurvatures( const DispatchBase&,
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+void
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
+PrincipalCurvatures( const DispatchBase&,
   const InputType& iPt,
   OutputType& oKmin,
   OutputType& oKmax,
@@ -262,7 +270,10 @@ void PrincipalCurvatures( const DispatchBase&,
   oEmax.Fill( 0. );
 }
 
-void PrincipalCurvatures( const Dispatch<3>&,
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+void
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
+PrincipalCurvatures( const Dispatch<3>&,
   const InputType& iPt,
   OutputType& oKmin,
   OutputType& oKmax,
@@ -339,6 +350,34 @@ void PrincipalCurvatures( const Dispatch<3>&,
     oEmin[1] = oEmax[2] * n[0] - oEmax[0] * n[2];
     oEmin[2] = oEmax[0] * n[1] - oEmax[1] * n[0];
     }
+}
+
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+void
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
+PrincipalCurvaturesTensor( const InputType& iPt,
+  OutputType& oKmin,
+  OutputType& oKmax,
+  GradientType& oEmin,
+  GradientType& oEmax )
+{
+  PrincipalCurvaturesTensor( Dispatch< PointDimension >(), iPt,
+    oKmin, oKmax, oEmin, oEmax );
+}
+
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+typename ImplicitFunctionBase< TOutput, VPointDimension, TInput >::HessianType
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::CurvatureTensor( const InputType& iPt )
+{
+  return CurvatureTensor( Dispatch< PointDimension >(), iPt );
+}
+
+template< typename TOutput, unsigned int VPointDimension, class TInput >
+void
+ImplicitFunctionBase< TOutput, VPointDimension, TInput >::
+PrintSelf(std::ostream& os, Indent indent) const
+{
+  Superclass::PrintSelf( os, indent );
 }
 
 }

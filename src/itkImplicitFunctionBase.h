@@ -31,6 +31,8 @@
  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =========================================================================*/
+#ifndef __itkImplicitFunctionBase_h
+#define __itkImplicitFunctionBase_h
 
 #include "itkObject.h"
 #include "itkVector.h"
@@ -61,9 +63,9 @@ namespace itk
    *
    */
 
-   template < typename TOutput,
-      unsigned int VPointDimension,
-      class TInput >
+  template < typename TOutput,
+    unsigned int VPointDimension,
+    class TInput >
   class ITK_EXPORT ImplicitFunctionBase : public Object
   {
   public:
@@ -164,7 +166,8 @@ namespace itk
       *  @return = \f$ \left|f(p)\right| \f$
       *     else
       */
-      virtual OutputType ImplicitFunctionBaseTaubinErrorValue( const InputType& iPt,
+      virtual OutputType TaubinErrorValue(
+        const InputType& iPt,
         const OutputType& iThreshold = vnl_math::eps );
   
 
@@ -189,17 +192,9 @@ namespace itk
          OutputType& oKmin,
          OutputType& oKmax,
          GradientType& oEmin,
-         GradientType& oEmax )
-        {
+         GradientType& oEmax );
 
-        PrincipalCurvaturesTensor( Dispatch< PointDimension >(), iPt,
-          oKmin, oKmax, oEmin, oEmax );
-        }
-
-      HessianType CurvatureTensor( const InputType& iPt ) 
-        {
-        return CurvatureTensor( Dispatch< PointDimension >(), iPt );
-        }
+      HessianType CurvatureTensor( const InputType& iPt );
 
 
    protected:
@@ -210,7 +205,7 @@ namespace itk
       virtual ~ImplicitFunctionBase( );
 
       /** */
-      virtual void PrintSelf(std::ostream& os, Indent indent) const {};
+      virtual void PrintSelf(std::ostream& os, Indent indent) const;
 
       struct DispatchBase {};
 
@@ -272,5 +267,7 @@ namespace itk
    };
 
 } // End of namespace itk
+
+#include "itkImplicitFunctionBase.txx"
 
 #endif
