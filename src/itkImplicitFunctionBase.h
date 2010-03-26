@@ -31,8 +31,6 @@
  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =========================================================================*/
-#ifndef __itkImplicitFunctionBase_h
-#define __itkImplicitFunctionBase_h
 
 #include "itkObject.h"
 #include "itkVector.h"
@@ -102,7 +100,7 @@ namespace itk
       *  \param
       *  \return
       */
-      virtual OutputType Evaluate( const InputType& iPt ) const = 0;
+      virtual OutputType Evaluate( const InputType& iPt ) = 0;
 
       /**
       *  \brief Evaluate the gradient of the ImplicitFunctionBase at a given position.
@@ -111,20 +109,10 @@ namespace itk
       *  \param iPt
       *  \return
       */
-      virtual GradientType Gradient( const InputType& iPt ) const = 0;
-      GradientType Normal( const InputType& iPt ) const
-        {
-        GradientType grad = Gradient( iPt );
-        OutputType sq_norm = grad.GetSquaredNorm();
-        if( sq_norm > vnl_math::eps )
-          {
-          return grad / vcl_sqrt( sq_norm );
-          }
-        else
-          {
-          return grad;
-          }
-        }
+      virtual GradientType Gradient( const InputType& iPt ) = 0;
+
+
+      GradientType Normal( const InputType& iPt );
 
       /**
       *  \brief Evaluate the hessian of the ImplicitFunctionBase at a given position.
@@ -132,7 +120,7 @@ namespace itk
       *  \param iPt
       *  \return
       */
-      virtual HessianType Hessian( const InputType& iPt ) const = 0;
+      virtual HessianType Hessian( const InputType& iPt ) = 0;
 
       /**
       * \brief returns the Laplacian Value at iPt.
@@ -140,18 +128,7 @@ namespace itk
       * \param[in] iPt
       * \return \f[\sum_{i=0}^{dimension}\frac{\partial^2 f}{\partial x_i^2}\f]
       */
-      OutputType Laplacian( const InputType& iPt ) const
-        {
-        HessianType hess = Hessian( iPt );
-
-        OutputType oValue = 0.;
-
-        for( unsigned int i = 0; i < PointDimension; ++i )
-          {
-          oValue += hess[i][i];
-          }
-        return oValue;
-        }
+      OutputType Laplacian( const InputType& iPt );
 
       /**
       *  \brief returns in the same time the value and the gradient of the
@@ -160,11 +137,7 @@ namespace itk
       *  \param[in] iPt
       */
       virtual void ValueAndGradient( const InputType& iPt,
-         OutputType& oValue, GradientType& oGrad ) const
-        {
-          oValue = Evaluate( iPt );
-          oGrad = Gradient( iPt );
-        }
+         OutputType& oValue, GradientType& oGrad );
 
       /**
       *  \brief returns in the same time value, gradient and hessian of the
@@ -175,12 +148,8 @@ namespace itk
       *  \param[in] oGrad
       *  \param[in] oHess
       */
-      void ValueGradientAndHessian( const InputType& iPt,
-         OutputType& oValue, GradientType& oGrad, HessianType& oHess ) const
-        {
-          ValueAndGradient( iPt, oValue, oGrad );
-          oHess = Hessian( iPt );
-        }
+      virtual void ValueGradientAndHessian( const InputType& iPt,
+         OutputType& oValue, GradientType& oGrad, HessianType& oHess );
 
       /**
       *  \brief Evaluate Approximation of the distance (\e Dist)
@@ -196,55 +165,16 @@ namespace itk
       *     else
       */
       virtual OutputType ImplicitFunctionBaseTaubinErrorValue( const InputType& iPt,
-        const OutputType& iThreshold = vnl_math::eps ) const
-        {
-        OutputType oValue = Evaluate( iPt );
+        const OutputType& iThreshold = vnl_math::eps );
+  
 
-        GradientType grad = Gradient( iPt );
+      bool IsInside( const InputType& iPt );
 
-        if( oValue != 0. )
-          {
-          // Implicit ImplicitFunctionBase value
-          oValue = vnl_math_abs( oValue );
+      bool IsOutside( const InputType& iPt );
 
-          // Norm of Gradient Vector
-          OutputType GradNorm = grad.GetNorm( );
+      OutputType MeanCurvature( const InputType& iPt );
 
-          if( GradNorm < iThreshold )
-            {
-            GradNorm = iThreshold;
-            }
-
-          if( GradNorm > vnl_math::eps )
-            {
-            oValue /= GradNorm;
-            }
-          }
-
-        return oValue;
-        }
-
-      bool IsInside( const InputType& iPt ) const
-        {
-        OutputType value = Evaluate( iPt );
-        return ( value < 0. );
-        }
-
-      bool IsOutside( const InputType& iPt ) const
-        {
-        OutputType value = Evaluate( iPt );
-        return ( value > 0. );
-        }
-
-      OutputType MeanCurvature( const InputType& iPt ) const
-        {
-        return MeanCurvature( Dispatch< PointDimension >(), iPt );
-        }
-
-      OutputType GaussKroneckerCurvature( const InputType& iPt ) const
-        {
-        return GaussKroneckerCurvature( Dispatch< PointDimension >(), iPt );
-        }
+      OutputType GaussKroneckerCurvature( const InputType& iPt );
 
       /**
       *  \brief Compute the Curvatures Tensor
@@ -259,14 +189,14 @@ namespace itk
          OutputType& oKmin,
          OutputType& oKmax,
          GradientType& oEmin,
-         GradientType& oEmax ) const
+         GradientType& oEmax )
         {
 
         PrincipalCurvaturesTensor( Dispatch< PointDimension >(), iPt,
           oKmin, oKmax, oEmin, oEmax );
         }
 
-      HessianType CurvatureTensor( const InputType& iPt ) const
+      HessianType CurvatureTensor( const InputType& iPt ) 
         {
         return CurvatureTensor( Dispatch< PointDimension >(), iPt );
         }
@@ -274,10 +204,10 @@ namespace itk
 
    protected:
       /** Default constructor */
-      ImplicitFunctionBase( )  : Superclass() {}
+      ImplicitFunctionBase( );
 
       /** Destructor */
-      virtual ~ImplicitFunctionBase( ) {}
+      virtual ~ImplicitFunctionBase( );
 
       /** */
       virtual void PrintSelf(std::ostream& os, Indent indent) const {};
@@ -288,80 +218,16 @@ namespace itk
       struct Dispatch : public DispatchBase {};
 
       OutputType MeanCurvature( const Dispatch< 3 >&,
-        const InputType& iPt ) const
-        {
-        GradientType grad = Gradient( iPt );
-        HessianType hessian = Hessian( iPt );
-
-        OutputType norm_g = grad.GetNorm();
-
-        if( norm_g == 0. )
-          {
-          return 0.;
-          }
-        else
-          {
-          HessianType Identity;
-          Identity.SetIdentity();
-          OutputType inv_norm_g = 1. / norm_g;
-          grad *= inv_norm_g;
-          OutputType factor = ( Identity - grad * grad.transpose() ) * hessian;
-
-          return -inv_norm_g * factor;
-          }
-        }
+        const InputType& iPt );
 
       OutputType MeanCurvature( const DispatchBase&,
-        const InputType& iPt ) const
-        {
-        GradientType grad = Gradient( iPt );
-        HessianType  hessian = Hessian( iPt );
-
-        OutputType sq_norm_g = grad.GetSquaredNorm();
-        OutputType norm_g = vcl_sqrt( sq_norm_g );
-        OutputType gHgt = grad * hessian * grad.transpose();
-        OutputType trace_H = 0.;
-
-        for( unsigned int dim = 0; dim < PointDimension; ++dim )
-          {
-          trace_H += hessian[dim][dim];
-          }
-
-        return ( 1. / ( ( PointDimension - 1 ) * norm_g * sq_norm_g ) *
-          (gHgt - sq_norm_g * trace_H) );
-        }
+        const InputType& iPt );
 
       OutputType GaussKroneckerCurvature( const Dispatch< 2 >&,
-        const InputType& iPt ) const
-        {
-        return 0.;
-        }
+        const InputType& iPt );
 
       OutputType GaussKroneckerCurvature( const DispatchBase&,
-        const InputType& iPt ) const
-        {
-        GradientType g = Gradient( iPt );
-        OutputType sq_norm_g = g.GetSquaredNorm();
-        if( sq_norm_g == 0. )
-          {
-          return 0.;
-          }
-        else
-          {
-          OutputType norm_g = vcl_sqrt( sq_norm_g );
-          HessianType H = Hessian( iPt );
-          OutputType coeff = ( PointDimension % 2 == 1 ) ? -norm_g : norm_g;
-
-          for( unsigned int dim = 0; dim < PointDimension; ++dim )
-            {
-            coeff *= norm_g;
-            }
-            // should be conjuguate but H is real...
-          OutputType gtH_g = g.transpose() * H.transpose() * g;
-
-          return gtH_g / coeff;
-          }
-        }
+        const InputType& iPt );
 
       /**
       *  \brief Compute the curvature tensor for a given position.
@@ -377,126 +243,24 @@ namespace itk
       *  \todo check the formula!
       */
       HessianType CurvatureTensor( const Dispatch<3>&,
-        const InputType& iPt ) const
-        {
-        GradientType g = Gradient( iPt );
-        HessianType H = Hessian( iPt );
-
-        OutputType inv_sq_norm = 1. / g.GetSquaredNorm();
-        OutputType inv_norm = vcl_sqrt( inv_sq_norm );
-
-        Matrix< OutputType, PointDimension, 1 > Gradient;
-
-        for( unsigned int i = 0; i < PointDimension; i++ )
-            Gradient[i] = g[i];
-
-        ImplicitFunctionBaseGradient2( iPt, Hessian );
-
-        HessianType oTensor = ( H -
-          inv_sq_norm * g.transpose() * H * g ) * inv_norm;
-
-        return oTensor;
-        }
+        const InputType& iPt );
 
       HessianType CurvatureTensor( const DispatchBase&,
-        const InputType& iPt ) const
-        {
-        HessianType oTensor;
-        oTensor.Fill( 0. );
-        return oTensor;
-        }
+        const InputType& iPt );
 
       void PrincipalCurvatures( const DispatchBase&,
         const InputType& iPt,
         OutputType& oKmin,
         OutputType& oKmax,
         GradientType& oEmin,
-        GradientType& oEmax )
-        {
-        oKmin = 0.;
-        oKmax = 0.;
-        oEmin.Fill( 0. );
-        oEmax.Fill( 0. );
-        }
+        GradientType& oEmax );
 
       void PrincipalCurvatures( const Dispatch<3>&,
         const InputType& iPt,
         OutputType& oKmin,
         OutputType& oKmax,
         GradientType& oEmin,
-        GradientType& oEmax )
-        {
-        OutputType mean_curvature = MeanCurvature( Dispatch<3>(), iPt );
-        OutputType gauss_curvature =
-          GaussKroneckerCurvature( Dispatch<3>(), iPt );
-
-        OutputType delta =
-          vnl_math_abs( mean_curvature * mean_curvature - gauss_curvature );
-
-        OutputType sqrt_delta = vcl_sqrt( delta );
-
-        oKmax = mean_curvature + sqrt_delta;
-        oKmin = mean_curvature - sqrt_delta;
-
-        if( sqrt_delta < 1e-6 )
-          {
-          oEmin.Fill( 0. );
-          oEmax.Fill( 0. );
-          }
-        else
-          {
-          HessianType tensor = CurvatureTensor( Dispatch<3>(), iPt );
-
-          /* solve for eigenvectors */
-          OutputType t[3];
-          t[0] = tensor[0][0] + oKmax;
-          t[1] = tensor[1][1] + oKmax;
-          t[2] = tensor[2][2] + oKmax;
-
-          GradientType v[3];
-          OutputType len[3];
-
-          v[0][0] = tensor[0][1] * tensor[1][2] - tensor[0][2] * t[1];
-          v[1][0] = tensor[0][2] * tensor[1][0] - tensor[1][2] * t[0];
-          v[2][0] = t[0] * t[1] - tensor[0][1] * tensor[1][0];
-          len[0] = vcl_sqrt( v[0][0] * v[0][0] +
-            v[1][0] * v[1][0] + v[2][0] * v[2][0] );
-
-          v[0][1] = tensor[0][1] * t[2] - tensor[0][2] * tensor[2][1];
-          v[1][1] = tensor[0][2] * tensor[2][0]- t[0] * t[2];
-          v[2][1] = t[0] * tensor[2][1] - tensor[0][1] * tensor[2][0];
-          len[1] = vcl_sqrt( v[0][1] * v[0][1] +
-            v[1][1] * v[1][1] + v[2][1] * v[2][1] );
-
-          v[0][2] = t[1] * t[2] - tensor[1][2] * tensor[2][1];
-          v[1][2] = tensor[1][2] * tensor[2][0]- tensor[1][0] * t[2];
-          v[2][2] = tensor[1][0] * tensor[2][1] - tensor[2][0]* t[1];
-          len[2] = vcl_sqrt( v[0][2] * v[0][2] +
-            v[1][2] * v[1][2] + v[2][2] * v[2][2] );
-
-          unsigned int index = 0;
-          OutputType len_max = len[index];
-
-          if( len[1] > len_max )
-            {
-            index = 1;
-            len_max = len[1];
-            }
-          if( len[2] > len_max )
-            {
-            index = 2;
-            len_max = len[2];
-            }
-
-          oEmax = v[index] / len[index];
-
-          GradientType n = Normal( iPt );
-
-          oEmin[0] = oEmax[1] * n[2] - oEmax[2] * n[1];
-          oEmin[1] = oEmax[2] * n[0] - oEmax[0] * n[2];
-          oEmin[2] = oEmax[0] * n[1] - oEmax[1] * n[0];
-          }
-        }
+        GradientType& oEmax );
 
   private:
       /** Not implemented */
