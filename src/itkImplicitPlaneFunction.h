@@ -34,6 +34,9 @@ namespace itk
 
     typedef FixedArray< OutputType, PointDimension+1 > CoefficientVectorType;
 
+    itkSetMacro( Coefficients, CoefficientVectorType );
+    itkGetMacro( Coefficients, CoefficientVectorType );
+
     OutputType Evaluate( const InputType& iPt );
     GradientType Gradient( const InputType& iPt );
     HessianType Hessian( const InputType& iPt );
