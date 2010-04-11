@@ -9,7 +9,9 @@ namespace itk
 template< typename TOutput, unsigned int VPointDimension, class TInput >
 ImplicitPlaneFunction< TOutput, VPointDimension, TInput >::
 ImplicitPlaneFunction() : Superclass()
-{}
+{
+  m_Coefficients.Fill( static_cast< OutputType >( 0. ) );
+}
 
 template< typename TOutput, unsigned int VPointDimension, class TInput >
 ImplicitPlaneFunction< TOutput, VPointDimension, TInput >::

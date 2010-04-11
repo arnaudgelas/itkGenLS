@@ -9,7 +9,9 @@ namespace itk
 template< typename TOutput, unsigned int VPointDimension, class TInput >
 ImplicitQuadraticFunction< TOutput, VPointDimension, TInput >::
 ImplicitQuadraticFunction() : Superclass()
-{}
+{
+  m_Coefficients.Fill( static_cast< OutputType >( 0. ) );
+}
 
 template< typename TOutput, unsigned int VPointDimension, class TInput >
 ImplicitQuadraticFunction< TOutput, VPointDimension, TInput >::
@@ -29,7 +31,9 @@ Evaluate( const InputType& iPt )
     {
     for( dim2 = dim; dim2 < PointDimension; ++dim2 )
       {
-      oValue += m_Coefficients[k++] * static_cast< OutputType >( iPt[dim] ) * static_cast< OutputType >( iPt[dim2] );
+      oValue += m_Coefficients[k++] * 
+        static_cast< OutputType >( iPt[dim] ) * 
+        static_cast< OutputType >( iPt[dim2] );
       }
     }
 
@@ -57,13 +61,15 @@ Gradient( const InputType& iPt )
     {
     oG[dim] += static_cast< OutputType >( 2.) * m_Coefficients[k++] * 
       static_cast< OutputType >( iPt[dim] );
+
     for( dim2 = dim+1; dim2 < PointDimension; ++dim2 )
       {
-      oG[dim] += m_Coefficients[k++] * static_cast< OutputType >( iPt[dim2] );
+      oG[dim] += m_Coefficients[k++] * 
+        static_cast< OutputType >( iPt[dim2] );
       }
     }
 
-  for( dim =0; dim < PointDimension; ++dim )
+  for( dim = 0; dim < PointDimension; ++dim )
     {
     oG[dim] += m_Coefficients[k++];
     }
