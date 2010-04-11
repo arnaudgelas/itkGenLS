@@ -32,7 +32,10 @@ namespace itk
     typedef typename Superclass::GradientType GradientType;
     typedef typename Superclass::HessianType HessianType;
 
-    typedef FixedArray< OutputType, PointDimension+1 > CoefficientVectorType;
+    typedef FixedArray< OutputType, 
+      PointDimension * ( PointDimension + 1 ) / 2 +
+      PointDimension + 1 
+    > CoefficientVectorType;
 
     itkSetMacro( Coefficients, CoefficientVectorType );
     itkGetMacro( Coefficients, CoefficientVectorType );

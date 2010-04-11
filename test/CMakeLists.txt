@@ -1,6 +1,7 @@
 SET( TEST_SRC 
   ImplicitFunctionBaseTest
   ImplicitPlaneFunctionTest
+  ImplicitQuadraticFunctionTest
   )
 
 FOREACH( var ${TEST_SRC} )
@@ -14,5 +15,9 @@ ADD_TEST( ImplicitFunctionBaseTest
 
 ADD_TEST( ImplicitPlaneFunctionTest
   ${EXECUTABLE_OUTPUT_PATH}/ImplicitPlaneFunctionTest
+)
+
+ADD_TEST( ImplicitQuadraticFunctionTest
+  ${EXECUTABLE_OUTPUT_PATH}/ImplicitQuadraticFunctionTest
 )
 

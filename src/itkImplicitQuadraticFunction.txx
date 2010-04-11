@@ -25,7 +25,7 @@ Evaluate( const InputType& iPt )
 {
   OutputType oValue = static_cast< OutputType >( 0. );
   
-  unsined int dim, dim2, k = 0;
+  unsigned int dim, dim2, k = 0;
   
   for( dim = 0; dim < PointDimension; ++dim )
     {
@@ -88,11 +88,12 @@ Hessian( const InputType& iPt )
 
   for( dim = 0; dim < PointDimension; ++dim )
     {
-    oH[dim][dim2] = static_cast< OutputType >( 2. ) * m_Coefficients[k++];
+    oH[dim][dim] = static_cast< OutputType >( 2. ) * m_Coefficients[k++];
 
     for( dim2 = dim+1; dim2 < PointDimension; ++dim2 )
       {
       oH[dim][dim2] = m_Coefficients[k++];
+      oH[dim2][dim] = oH[dim][dim2];
       }
     }
   return oH;
